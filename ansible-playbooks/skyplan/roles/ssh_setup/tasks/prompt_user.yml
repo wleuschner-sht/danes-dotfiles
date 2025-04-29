@@ -1,0 +1,11 @@
+- name: Show public key
+  debug:
+    msg: |
+      SSH key was not yet added to {{ git_server_host }}.
+      Add this public key to your account:
+
+      {{ lookup('file', ssh_key_path + '.pub') }}
+
+- name: Pause for key upload
+  pause:
+    prompt: "Press ENTER once you've added the SSH key to {{ git_server_host }}"

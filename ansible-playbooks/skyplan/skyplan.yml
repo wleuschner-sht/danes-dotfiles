@@ -6,3 +6,6 @@
     - name: Setup ZSH
       include_role:
         name: zsh
+    - name: Setup SSH For Git and Github
+      include_role:
+        name: ssh_setup

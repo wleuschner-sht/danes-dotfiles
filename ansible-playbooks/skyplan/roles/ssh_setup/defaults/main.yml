@@ -1,0 +1,5 @@
+ssh_key_path: "{{ ansible_env.HOME }}/.ssh/id_ed25519"
+ssh_key_comment: "{{ ansible_env.USER }}@{{ inventory_hostname }}"
+git_server_host: github.com
+git_server_user: git
+known_hosts_path: "{{ ansible_env.HOME }}/.ssh/known_hosts"

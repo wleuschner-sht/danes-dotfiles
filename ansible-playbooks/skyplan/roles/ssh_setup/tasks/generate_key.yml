@@ -1,0 +1,6 @@
+- name: Generate SSH keypair
+  openssh_keypair:
+    path: "{{ ssh_key_path }}"
+    type: ed25519
+    comment: "{{ ssh_key_comment }}"
+    force: false
