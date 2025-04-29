@@ -1,3 +1,12 @@
+- name: Ensure ~/.ssh directory exists
+  file:
+    path: "{{ ssh_key_path | dirname }}"
+    state: directory
+    mode: "0700"
+    owner: "{{ ansible_env.USER }}"
+    group: "{{ ansible_env.USER }}"
+  become: false # Make sure we create it as the current user, not root
+
 - name: Generate SSH keypair
   openssh_keypair:
     path: "{{ ssh_key_path }}"
