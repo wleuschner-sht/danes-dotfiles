@@ -1,8 +1,9 @@
 - name: Test SSH authentication to Git server
   shell: |
-    ssh -o StrictHostKeyChecking=no -o BatchMode=yes -T {{ git_server_user }}@{{ git_server_host }} || true
+    ssh -o StrictHostKeyChecking=no -o BatchMode=yes -T {{ git_server_user }}@{{ git_server_host }} 2>&1 || true
   register: ssh_auth_test
   changed_when: false
+  become: false
 
 - name: Determine if authenticated
   set_fact:
