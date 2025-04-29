@@ -1,0 +1,5 @@
+- name: Install ZSH on MacOS
+  ansible.builtin.homebrew:
+    name: zsh
+    state: present
+    update_homebrew: true
