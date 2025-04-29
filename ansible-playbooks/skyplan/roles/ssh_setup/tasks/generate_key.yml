@@ -4,7 +4,6 @@
     state: directory
     mode: "0700"
     owner: "{{ ansible_user_id }}"
-    group: "{{ ansible_user_id }}"
   become: false
 
 - name: Generate SSH keypair
