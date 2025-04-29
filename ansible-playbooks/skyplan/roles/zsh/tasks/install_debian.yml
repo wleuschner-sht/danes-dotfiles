@@ -1,0 +1,17 @@
+- name: Install ZSH on Ubuntu
+  become: true
+  apt:
+    name:
+      - zsh
+      - software-properties-common
+    state: present
+    update_cache: true
+  when: ansible_facts['distribution'] == 'Ubuntu'
+
+- name: Install ZSH on Debian
+  become: true
+  apt:
+    name: zsh
+    state: present
+    update_cache: true
+  when: ansible_facts['distribution'] == 'Debian'

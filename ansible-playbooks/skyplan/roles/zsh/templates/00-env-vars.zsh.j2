@@ -1,0 +1,5 @@
+# Environment variables managed by Ansible
+
+{% for env in custom_env_vars %}
+export {{ env.name }}="{{ env.value }}"
+{% endfor %}

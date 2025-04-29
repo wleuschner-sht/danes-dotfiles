@@ -1,0 +1,10 @@
+# roles/zsh/defaults/main.yml
+work_dir: "{{ ansible_env.HOME }}/work"
+zshrc_file: "{{ ansible_env.HOME }}/.zshrc"
+zshrc_custom_dir: "{{ ansible_env.HOME }}/.zshrc.d"
+
+custom_env_vars:
+  - name: SKYHOME
+    value: "{{ work_dir }}"
+  - name: PATH
+    value: "$GOPATH/bin:$PATH"

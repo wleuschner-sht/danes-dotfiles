@@ -1,0 +1,11 @@
+- name: Ensure ~/.zshrc.d directory exists
+  file:
+    path: "{{ zshrc_custom_dir }}"
+    state: directory
+    mode: '0755'
+
+- name: Write environment variables file
+  template:
+    src: 00-env-vars.zsh.j2
+    dest: "{{ zshrc_custom_dir }}/00-env-vars.zsh"
+    mode: '0644'

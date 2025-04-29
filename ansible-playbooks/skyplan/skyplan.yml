@@ -1,0 +1,8 @@
+- name: Setup Development Environment For SkyPlan Project
+  hosts: local
+  gather_facts: true
+
+  tasks:
+    - name: Setup ZSH
+      include_role:
+        name: zsh

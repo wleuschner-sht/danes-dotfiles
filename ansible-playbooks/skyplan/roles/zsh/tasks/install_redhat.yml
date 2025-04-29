@@ -1,0 +1,5 @@
+- name: Install ZSH on RedHat/CentOS/Fedora
+  become: true
+  yum:
+    name: zsh
+    state: present

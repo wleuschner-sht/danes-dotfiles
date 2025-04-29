@@ -1,0 +1,8 @@
+- name: Install ZSH
+  include_tasks: install.yml
+
+- name: Setup Environment Variables
+  include_tasks: setup_env.yml
+
+- name: Configure .zshrc
+  include_tasks: configure_zshrc.yml

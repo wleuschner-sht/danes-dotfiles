@@ -1,0 +1,6 @@
+- name: Install ZSH on Arch/Manjaro
+  become: true
+  pacman:
+    name: zsh
+    state: present
+    update_cache: true
