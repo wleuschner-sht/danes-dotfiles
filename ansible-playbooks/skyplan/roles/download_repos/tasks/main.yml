@@ -1,0 +1,14 @@
+- name: Ensure work directory exists
+  ansible.builtin.file:
+    path: "{{ work_dir }}"
+    state: directory
+    mode: "0755"
+
+- name: Clone skyhop repos
+  ansible.builtin.git:
+    repo: "{{ item.repo }}"
+    dest: "{{ item.dest }}"
+    version: main
+    accept_hostkey: true
+    update: true
+  loop: "{{ repos }}"

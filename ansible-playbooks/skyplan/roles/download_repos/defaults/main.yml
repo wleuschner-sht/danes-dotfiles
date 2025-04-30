@@ -1,0 +1,7 @@
+work_dir: "{{ lookup('env', 'SKYHOME') }}"
+
+repos:
+  - repo: git@github.com:skyhop-tech/go-sky.git
+    dest: "{{work_dir/go-sky}}"
+  - repo: git@github.com:skyhop-tech/portal-spa.git
+    dest: "{{work_dir/portal-spa}}"

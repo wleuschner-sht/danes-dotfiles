@@ -9,3 +9,6 @@
     - name: Setup SSH For Git and Github
       include_role:
         name: ssh_setup
+    - name: Clone SkyHop Repos
+      include_role:
+        name: download_repos
