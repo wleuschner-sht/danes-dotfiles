@@ -1,31 +1,5 @@
 ---
-- name: Download Helm {{ helm_version }} archive
-  get_url:
-    url: "{{ helm_url }}"
-    dest: "{{ helm_archive }}"
-    mode: "0644"
-    validate_certs: yes
-
-- name: Extract Helm archive
-  unarchive:
-    src: "{{ helm_archive }}"
-    dest: /tmp
-    remote_src: yes
-    creates: "{{ helm_extract_path }}"
-
-- name: Copy Helm binary to /usr/local/bin
-  become: true
-  copy:
-    src: "{{ helm_extract_path }}/helm"
-    dest: /usr/local/bin/helm
-    mode: "0755"
-    remote_src: yes
-
-- name: Verify Helm installation
-  command: helm version --short
-  register: helm_version_check
-  changed_when: false
-
-- name: Show Helm version
-  debug:
-    var: helm_version_check.stdout
+- name: Ensure helm is installed
+  homebrew:
+    name: helm
+    state: present
