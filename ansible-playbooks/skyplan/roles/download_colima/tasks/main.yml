@@ -34,8 +34,8 @@
     state: present
   when: ansible_facts['os_family'] == 'Darwin'
 
-- name: Start Colima
-  shell: colima start
+- name: Start Colima with QEMU backend (for UTM compatibility)
+  shell: colima start --vm-type=qemu
   register: colima_started
   changed_when: "'already running' not in colima_started.stdout"
   when: ansible_facts['os_family'] == 'Darwin'
