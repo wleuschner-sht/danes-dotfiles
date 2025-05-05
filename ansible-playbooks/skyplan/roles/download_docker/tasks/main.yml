@@ -22,11 +22,6 @@
     - ansible_facts['os_family'] == 'Darwin'
     - not homebrew_installed
 
-- name: Tap homebrew/cask
-  homebrew_tap:
-    name: homebrew/cask
-  when: ansible_facts['os_family'] == 'Darwin'
-
 - name: Install Docker Desktop via Homebrew Cask
   homebrew_cask:
     name: docker
