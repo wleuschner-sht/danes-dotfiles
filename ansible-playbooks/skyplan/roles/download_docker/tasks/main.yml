@@ -1,0 +1,46 @@
+---
+- name: Check if Docker is already installed
+  stat:
+    path: /Applications/Docker.app
+  register: docker_installed
+
+- name: Download Docker for macOS (Intel or ARM)
+  get_url:
+    url: "{{ docker_url }}"
+    dest: "/tmp/Docker.dmg"
+    mode: "0644"
+    validate_certs: no
+  when: not docker_installed.stat.exists
+
+- name: Mount Docker DMG
+  command: hdiutil attach /tmp/Docker.dmg -nobrowse -quiet
+  when: not docker_installed.stat.exists
+
+- name: Copy Docker to Applications folder
+  command: cp -R /Volumes/Docker/Docker.app /Applications/
+  become: true
+  when: not docker_installed.stat.exists
+
+- name: Unmount Docker DMG
+  command: hdiutil detach /Volumes/Docker -quiet
+  when: not docker_installed.stat.exists
+
+- name: Start Docker app (will prompt for permissions if first time)
+  shell: open -a Docker
+  when: not docker_installed.stat.exists
+
+- name: Wait for Docker daemon to be available
+  shell: |
+    while ! docker system info > /dev/null 2>&1; do sleep 2; done
+  retries: 10
+  delay: 5
+  register: docker_ready
+  until: docker_ready.rc == 0
+
+- name: Ensure Docker Compose works
+  shell: docker compose version
+  register: compose_output
+
+- name: Print Docker Compose version
+  debug:
+    var: compose_output.stdout

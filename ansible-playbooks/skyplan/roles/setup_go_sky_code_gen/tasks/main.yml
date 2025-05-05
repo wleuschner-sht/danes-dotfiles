@@ -1,0 +1,32 @@
+---
+- name: Set path to go-sky repo
+  set_fact:
+    go_sky_path: "{{ ansible_env.HOME }}/work/go-sky"
+
+- name: Check if go-sky repo exists
+  stat:
+    path: "{{ go_sky_path }}"
+  register: go_sky_dir
+
+- name: Fail if go-sky directory is missing
+  fail:
+    msg: "The go-sky repo is not present at {{ go_sky_path }}. Make sure it was cloned first."
+  when: not go_sky_dir.stat.exists
+
+- name: Run provision code generation
+  shell: make gen
+  args:
+    chdir: "{{ go_sky_path }}/provision"
+    executable: /bin/zsh
+
+- name: Run proto code generation
+  shell: make gen
+  args:
+    chdir: "{{ go_sky_path }}/proto"
+    executable: /bin/zsh
+
+- name: Run full project generation including GraphQL
+  shell: make gen
+  args:
+    chdir: "{{ go_sky_path }}"
+    executable: /bin/zsh

@@ -24,3 +24,33 @@
     - name: Install Go 1.20.14
       include_role:
         name: download_golang
+    - name: Install Docker and Docker Compose on macOS
+      include_role:
+        name: docker_docker
+    - name: Install Proto and Buf tools
+      include_role:
+        name: download_proto
+    - name: Install Atlas CLI
+      include_role:
+        name: install_atlas
+    - name: Install pkg-config
+      include_role:
+        name: install_pkg_config
+    - name: Install ImageMagick from source
+      include_role:
+        name: download_imagemagick
+    - name: Install Helm v3.6.3
+      include_role:
+        name: download_helm
+    - name: Install Go CLI tools
+      include_role:
+        name: download_go_tools
+    - name: Install VSCode, SQL Ace, Tmux, and MYSQL
+      include_role:
+        name: download_dev_tools
+    - name: Setup Go Sky Repo (Part 1 - Scripts)
+      include_role:
+        name: setup_go_sky_scripts
+    - name: Setup Go Sky Repo (Part 2 - Code Generation)
+      include_role:
+        name: setup_go_sky_code_gen

@@ -1,0 +1,5 @@
+---
+docker_url: >-
+  {{ 'https://desktop.docker.com/mac/main/arm64/Docker.dmg'
+     if ansible_facts['architecture'] == 'arm64'
+     else 'https://desktop.docker.com/mac/main/x86_64/Docker.dmg' }}

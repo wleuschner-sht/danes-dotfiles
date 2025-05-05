@@ -1,0 +1,52 @@
+---
+- name: Ensure Homebrew is installed
+  stat:
+    path: "{{ item }}"
+  loop:
+    - /opt/homebrew/bin/brew
+    - /usr/local/bin/brew
+  register: homebrew_paths
+  when: ansible_facts['os_family'] == 'Darwin'
+
+- name: Set Homebrew installed flag
+  set_fact:
+    homebrew_installed: "{{ homebrew_paths.results | selectattr('stat.exists', 'equalto', true) | list | length > 0 }}"
+  when: ansible_facts['os_family'] == 'Darwin'
+
+- name: Install Homebrew if not installed
+  shell: |
+    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+  args:
+    executable: /bin/zsh
+  when:
+    - ansible_facts['os_family'] == 'Darwin'
+    - not homebrew_installed
+
+- name: Tap homebrew/cask for GUI apps
+  homebrew_tap:
+    name: homebrew/cask
+  when: ansible_facts['os_family'] == 'Darwin'
+
+- name: Install Visual Studio Code
+  homebrew_cask:
+    name: visual-studio-code
+    state: present
+  when: ansible_facts['os_family'] == 'Darwin'
+
+- name: Install Sequel Ace
+  homebrew_cask:
+    name: sequel-ace
+    state: present
+  when: ansible_facts['os_family'] == 'Darwin'
+
+- name: Install MySQL
+  homebrew:
+    name: mysql
+    state: present
+  when: ansible_facts['os_family'] == 'Darwin'
+
+- name: Install Tmux
+  homebrew:
+    name: tmux
+    state: present
+  when: ansible_facts['os_family'] == 'Darwin'

@@ -1,0 +1,6 @@
+---
+imagemagick_version: "7.1.1-25"
+imagemagick_url: "https://imagemagick.org/archive/releases/ImageMagick-{{ imagemagick_version }}.tar.bz2"
+imagemagick_archive: "ImageMagick-{{ imagemagick_version }}.tar.bz2"
+imagemagick_src_dir: "ImageMagick-{{ imagemagick_version }}"
+imagemagick_install_prefix: "/opt"

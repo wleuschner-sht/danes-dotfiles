@@ -1,0 +1,20 @@
+---
+- name: Check if atlas is already installed
+  command: which atlas
+  register: atlas_check
+  ignore_errors: true
+
+- name: Install Atlas CLI via install script
+  shell: curl -sSf https://atlasgo.sh | sh
+  args:
+    executable: /bin/zsh
+  when: atlas_check.rc != 0
+
+- name: Verify Atlas CLI is installed
+  command: atlas version
+  register: atlas_version_output
+  changed_when: false
+
+- name: Show Atlas version
+  debug:
+    var: atlas_version_output.stdout

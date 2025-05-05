@@ -1,0 +1,7 @@
+---
+helm_version: "v3.6.3"
+helm_os: "darwin"
+helm_arch: "{{ 'arm64' if ansible_facts['architecture'] == 'arm64' else 'amd64' }}"
+helm_url: "https://get.helm.sh/helm-{{ helm_version }}-{{ helm_os }}-{{ helm_arch }}.tar.gz"
+helm_archive: "/tmp/helm-{{ helm_version }}-{{ helm_os }}-{{ helm_arch }}.tar.gz"
+helm_extract_path: "/tmp/helm-{{ helm_os }}-{{ helm_arch }}"

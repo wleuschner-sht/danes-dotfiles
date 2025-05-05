@@ -1,0 +1,63 @@
+---
+- name: Ensure Homebrew is installed (Intel and Apple Silicon)
+  stat:
+    path: "{{ item }}"
+  loop:
+    - /opt/homebrew/bin/brew
+    - /usr/local/bin/brew
+  register: homebrew_paths
+  when: ansible_facts['os_family'] == 'Darwin'
+
+- name: Set fact for Homebrew installation status
+  set_fact:
+    homebrew_installed: "{{ homebrew_paths.results | selectattr('stat.exists', 'equalto', true) | list | length > 0 }}"
+  when: ansible_facts['os_family'] == 'Darwin'
+
+- name: Install Homebrew if not installed
+  shell: |
+    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+  args:
+    executable: /bin/zsh
+  when:
+    - ansible_facts['os_family'] == 'Darwin'
+    - not homebrew_installed
+
+- name: Install ImageMagick dependencies via Homebrew
+  homebrew:
+    name: imagemagick
+    state: present
+    install_options: ["--only-dependencies"]
+  when: ansible_facts['os_family'] == 'Darwin'
+
+- name: Download ImageMagick source tarball
+  get_url:
+    url: "{{ imagemagick_url }}"
+    dest: "/tmp/{{ imagemagick_archive }}"
+    mode: "0644"
+
+- name: Extract ImageMagick tarball
+  unarchive:
+    src: "/tmp/{{ imagemagick_archive }}"
+    dest: /tmp
+    remote_src: yes
+    creates: "/tmp/{{ imagemagick_src_dir }}"
+
+- name: Configure ImageMagick source
+  shell: |
+    ./configure --prefix={{ imagemagick_install_prefix }} --with-quantum-depth=16 --disable-dependency-tracking --without-perl
+  args:
+    chdir: "/tmp/{{ imagemagick_src_dir }}"
+    executable: /bin/zsh
+
+- name: Compile ImageMagick
+  shell: make -j 4
+  args:
+    chdir: "/tmp/{{ imagemagick_src_dir }}"
+    executable: /bin/zsh
+
+- name: Install ImageMagick
+  become: true
+  shell: make install
+  args:
+    chdir: "/tmp/{{ imagemagick_src_dir }}"
+    executable: /bin/zsh
