@@ -26,7 +26,7 @@
         name: download_golang
     - name: Install Docker and Docker Compose on macOS
       include_role:
-        name: download_docker
+        name: download_colima
     - name: Install Proto and Buf tools
       include_role:
         name: download_proto

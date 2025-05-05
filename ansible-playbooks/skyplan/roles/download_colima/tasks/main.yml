@@ -1,0 +1,60 @@
+---
+- name: Ensure Homebrew is installed (Apple Silicon and Intel paths)
+  stat:
+    path: "{{ item }}"
+  loop:
+    - /opt/homebrew/bin/brew
+    - /usr/local/bin/brew
+  register: homebrew_paths
+  when: ansible_facts['os_family'] == 'Darwin'
+
+- name: Set Homebrew installed flag
+  set_fact:
+    homebrew_installed: "{{ homebrew_paths.results | selectattr('stat.exists', 'equalto', true) | list | length > 0 }}"
+  when: ansible_facts['os_family'] == 'Darwin'
+
+- name: Install Homebrew if not installed
+  shell: |
+    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+  args:
+    executable: /bin/zsh
+  when:
+    - ansible_facts['os_family'] == 'Darwin'
+    - not homebrew_installed
+
+- name: Install Docker CLI
+  homebrew:
+    name: docker
+    state: present
+  when: ansible_facts['os_family'] == 'Darwin'
+
+- name: Install Colima (lightweight Docker runtime for macOS)
+  homebrew:
+    name: colima
+    state: present
+  when: ansible_facts['os_family'] == 'Darwin'
+
+- name: Start Colima
+  shell: colima start
+  register: colima_started
+  changed_when: "'already running' not in colima_started.stdout"
+  when: ansible_facts['os_family'] == 'Darwin'
+
+- name: Wait for Docker daemon via Colima
+  shell: |
+    while ! docker system info > /dev/null 2>&1; do sleep 2; done
+  retries: 10
+  delay: 5
+  register: docker_ready
+  until: docker_ready.rc == 0
+  when: ansible_facts['os_family'] == 'Darwin'
+
+- name: Check Docker Compose version
+  shell: docker compose version
+  register: compose_version
+  when: ansible_facts['os_family'] == 'Darwin'
+
+- name: Show Docker Compose version
+  debug:
+    var: compose_version.stdout
+  when: compose_version is defined
