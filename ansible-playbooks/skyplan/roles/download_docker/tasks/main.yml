@@ -1,4 +1,10 @@
 ---
+- name: Check if Docker.app is installed
+  stat:
+    path: /Applications/Docker.app
+  register: docker_app
+  when: ansible_facts['os_family'] == 'Darwin'
+
 - name: Ensure Homebrew is installed (Apple Silicon and Intel paths)
   stat:
     path: "{{ item }}"
@@ -26,16 +32,15 @@
   homebrew_cask:
     name: docker
     state: present
-  when: ansible_facts['os_family'] == 'Darwin'
+  when:
+    - ansible_facts['os_family'] == 'Darwin'
+    - not docker_app.stat.exists
 
-- name: Check if Docker.app is installed
-  stat:
-    path: /Applications/Docker.app
-  register: docker_app
-
-- name: Start Docker Desktop (GUI app)
+- name: Start Docker Desktop (GUI)
   shell: open -a Docker
-  when: docker_app.stat.exists
+  when:
+    - ansible_facts['os_family'] == 'Darwin'
+    - docker_app.stat.exists
 
 - name: Wait for Docker daemon to be ready
   shell: |
@@ -44,11 +49,18 @@
   delay: 5
   register: docker_ready
   until: docker_ready.rc == 0
+  when:
+    - ansible_facts['os_family'] == 'Darwin'
+    - docker_app.stat.exists
 
-- name: Confirm Docker Compose is available
+- name: Check Docker Compose version
   shell: docker compose version
-  register: compose_check
+  register: compose_version
+  when:
+    - ansible_facts['os_family'] == 'Darwin'
+    - docker_app.stat.exists
 
-- name: Print Docker Compose version
+- name: Show Docker Compose version
   debug:
-    var: compose_check.stdout
+    var: compose_version.stdout
+  when: compose_version is defined
