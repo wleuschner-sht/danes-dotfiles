@@ -22,6 +22,19 @@
     - ansible_facts['os_family'] == 'Darwin'
     - not homebrew_installed
 
+# 🧪 Check if ImageMagick is already installed
+- name: Check if ImageMagick is installed
+  command: magick -version
+  register: imagemagick_version
+  changed_when: false
+  failed_when: false
+
+- name: Set skip flag if ImageMagick is installed and version is sufficient
+  set_fact:
+    imagemagick_skip_install: "{{ imagemagick_version.stdout is search('ImageMagick') }}"
+  when: imagemagick_version.rc == 0
+
+# 📦 Install Dependencies
 - name: Ensure ImageMagick dependencies are installed via Homebrew
   homebrew:
     name:
@@ -36,13 +49,17 @@
       - autoconf
       - automake
     state: present
-  when: ansible_facts['os_family'] == 'Darwin'
+  when:
+    - ansible_facts['os_family'] == 'Darwin'
+    - not imagemagick_skip_install
 
+# ⬇️ Download and Build ImageMagick
 - name: Download ImageMagick source tarball
   get_url:
     url: "{{ imagemagick_url }}"
     dest: "/tmp/{{ imagemagick_archive }}"
     mode: "0644"
+  when: not imagemagick_skip_install
 
 - name: Extract ImageMagick tarball
   unarchive:
@@ -50,12 +67,14 @@
     dest: /tmp
     remote_src: yes
     creates: "/tmp/{{ imagemagick_src_dir }}"
+  when: not imagemagick_skip_install
 
 - name: Clean previous build artifacts if any
   shell: make distclean || true
   args:
     chdir: "/tmp/{{ imagemagick_src_dir }}"
     executable: /bin/zsh
+  when: not imagemagick_skip_install
 
 - name: Configure ImageMagick source without JXL
   shell: |
@@ -70,12 +89,14 @@
   args:
     chdir: "/tmp/{{ imagemagick_src_dir }}"
     executable: /bin/zsh
+  when: not imagemagick_skip_install
 
 - name: Compile ImageMagick
   shell: make -j 4
   args:
     chdir: "/tmp/{{ imagemagick_src_dir }}"
     executable: /bin/zsh
+  when: not imagemagick_skip_install
 
 - name: Install ImageMagick
   become: true
@@ -83,3 +104,4 @@
   args:
     chdir: "/tmp/{{ imagemagick_src_dir }}"
     executable: /bin/zsh
+  when: not imagemagick_skip_install
