@@ -25,14 +25,15 @@
 # Visual Studio Code
 - name: Check if Visual Studio Code is installed
   stat:
-    path: /Applications/Visual\ Studio\ Code.app
+    path: /Applications/Visual Studio Code.app
   register: vscode_stat
   when: ansible_facts['os_family'] == 'Darwin'
 
-- name: Install Visual Studio Code
-  homebrew_cask:
-    name: visual-studio-code
-    state: present
+- name: Install Visual Studio Code via brew cask
+  command: brew install --cask visual-studio-code
+  register: vscode_install
+  failed_when: vscode_install.rc != 0 and "'already an App' not in vscode_install.stderr"
+  changed_when: vscode_install.rc == 0
   when:
     - ansible_facts['os_family'] == 'Darwin'
     - not vscode_stat.stat.exists
@@ -40,14 +41,15 @@
 # Sequel Ace
 - name: Check if Sequel Ace is installed
   stat:
-    path: /Applications/Sequel\ Ace.app
+    path: /Applications/Sequel Ace.app
   register: sequel_ace_stat
   when: ansible_facts['os_family'] == 'Darwin'
 
-- name: Install Sequel Ace
-  homebrew_cask:
-    name: sequel-ace
-    state: present
+- name: Install Sequel Ace via brew cask
+  command: brew install --cask sequel-ace
+  register: sequel_ace_install
+  failed_when: sequel_ace_install.rc != 0 and "'already an App' not in sequel_ace_install.stderr"
+  changed_when: sequel_ace_install.rc == 0
   when:
     - ansible_facts['os_family'] == 'Darwin'
     - not sequel_ace_stat.stat.exists
@@ -68,7 +70,7 @@
     - ansible_facts['os_family'] == 'Darwin'
     - mysql_check.rc != 0
 
-# Tmux
+# Tmux (CLI tool)
 - name: Check if Tmux is installed
   command: brew list tmux
   register: tmux_check
