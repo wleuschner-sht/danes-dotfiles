@@ -1,9 +1,26 @@
 ---
-- name: Ensure Homebrew is installed (macOS only)
-  homebrew:
-    name: homebrew
-    state: present
+- name: Check if Homebrew is installed (Apple Silicon and Intel paths)
+  stat:
+    path: "{{ item }}"
+  loop:
+    - /opt/homebrew/bin/brew
+    - /usr/local/bin/brew
+  register: homebrew_paths
   when: ansible_facts['os_family'] == 'Darwin'
+
+- name: Set fact for Homebrew installation status
+  set_fact:
+    homebrew_installed: "{{ homebrew_paths.results | selectattr('stat.exists', 'equalto', true) | list | length > 0 }}"
+  when: ansible_facts['os_family'] == 'Darwin'
+
+- name: Install Homebrew if not installed
+  shell: |
+    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+  args:
+    executable: /bin/zsh
+  when:
+    - ansible_facts['os_family'] == 'Darwin'
+    - not homebrew_installed
 
 - name: Install NVM via Homebrew
   homebrew:
