@@ -22,11 +22,6 @@
     - ansible_facts['os_family'] == 'Darwin'
     - not homebrew_installed
 
-- name: Tap homebrew/cask for GUI apps
-  homebrew_tap:
-    name: homebrew/cask
-  when: ansible_facts['os_family'] == 'Darwin'
-
 - name: Install Visual Studio Code
   homebrew_cask:
     name: visual-studio-code
