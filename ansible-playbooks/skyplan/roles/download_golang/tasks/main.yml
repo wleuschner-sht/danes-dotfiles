@@ -25,6 +25,7 @@
     url: "https://go.dev/dl/go1.20.14.darwin-{{ go_arch }}.tar.gz"
     dest: /tmp/go1.20.14.tar.gz
     mode: "0644"
+    validate_certs: no # <-- disables certificate validation
   when: ansible_facts['os_family'] == 'Darwin'
 
 - name: Extract Go to /usr/local
