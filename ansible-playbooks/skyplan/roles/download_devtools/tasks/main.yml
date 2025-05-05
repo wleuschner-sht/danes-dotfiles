@@ -24,10 +24,9 @@
 
 # Visual Studio Code
 - name: Check if Visual Studio Code is installed
-  command: brew list --cask visual-studio-code
-  register: vscode_check
-  failed_when: false
-  changed_when: false
+  stat:
+    path: /Applications/Visual\ Studio\ Code.app
+  register: vscode_stat
   when: ansible_facts['os_family'] == 'Darwin'
 
 - name: Install Visual Studio Code
@@ -36,14 +35,13 @@
     state: present
   when:
     - ansible_facts['os_family'] == 'Darwin'
-    - vscode_check.rc != 0
+    - not vscode_stat.stat.exists
 
 # Sequel Ace
 - name: Check if Sequel Ace is installed
-  command: brew list --cask sequel-ace
-  register: sequel_ace_check
-  failed_when: false
-  changed_when: false
+  stat:
+    path: /Applications/Sequel\ Ace.app
+  register: sequel_ace_stat
   when: ansible_facts['os_family'] == 'Darwin'
 
 - name: Install Sequel Ace
@@ -52,9 +50,9 @@
     state: present
   when:
     - ansible_facts['os_family'] == 'Darwin'
-    - sequel_ace_check.rc != 0
+    - not sequel_ace_stat.stat.exists
 
-# MySQL
+# MySQL (CLI tool, no .app)
 - name: Check if MySQL is installed
   command: brew list mysql
   register: mysql_check
