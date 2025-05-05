@@ -30,3 +30,9 @@
   args:
     chdir: "{{ go_sky_path }}"
     executable: /bin/zsh
+
+- name: Run go mod tidy
+  shell: go mod tidy
+  args:
+    chdir: "{{ go_sky_path }}"
+    executable: /bin/zsh
