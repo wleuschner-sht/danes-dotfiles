@@ -32,10 +32,10 @@
         name: download_proto
     - name: Install Atlas CLI
       include_role:
-        name: install_atlas
+        name: download_atlas
     - name: Install pkg-config
       include_role:
-        name: install_pkg_config
+        name: download_pkg_config
     - name: Install ImageMagick from source
       include_role:
         name: download_imagemagick
