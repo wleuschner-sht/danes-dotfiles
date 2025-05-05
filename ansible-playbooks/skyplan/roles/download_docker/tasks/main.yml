@@ -1,35 +1,48 @@
 ---
-- name: Check if Docker is already installed
+- name: Ensure Homebrew is installed (Apple Silicon and Intel paths)
+  stat:
+    path: "{{ item }}"
+  loop:
+    - /opt/homebrew/bin/brew
+    - /usr/local/bin/brew
+  register: homebrew_paths
+  when: ansible_facts['os_family'] == 'Darwin'
+
+- name: Set Homebrew installed flag
+  set_fact:
+    homebrew_installed: "{{ homebrew_paths.results | selectattr('stat.exists', 'equalto', true) | list | length > 0 }}"
+  when: ansible_facts['os_family'] == 'Darwin'
+
+- name: Install Homebrew if not installed
+  shell: |
+    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+  args:
+    executable: /bin/zsh
+  when:
+    - ansible_facts['os_family'] == 'Darwin'
+    - not homebrew_installed
+
+- name: Tap homebrew/cask
+  homebrew_tap:
+    name: homebrew/cask
+  when: ansible_facts['os_family'] == 'Darwin'
+
+- name: Install Docker Desktop via Homebrew Cask
+  homebrew_cask:
+    name: docker
+    state: present
+  when: ansible_facts['os_family'] == 'Darwin'
+
+- name: Check if Docker.app is installed
   stat:
     path: /Applications/Docker.app
-  register: docker_installed
+  register: docker_app
 
-- name: Download Docker for macOS (Intel or ARM)
-  get_url:
-    url: "{{ docker_url }}"
-    dest: "/tmp/Docker.dmg"
-    mode: "0644"
-    validate_certs: no
-  when: not docker_installed.stat.exists
-
-- name: Mount Docker DMG
-  command: hdiutil attach /tmp/Docker.dmg -nobrowse -quiet
-  when: not docker_installed.stat.exists
-
-- name: Copy Docker to Applications folder
-  command: cp -R /Volumes/Docker/Docker.app /Applications/
-  become: true
-  when: not docker_installed.stat.exists
-
-- name: Unmount Docker DMG
-  command: hdiutil detach /Volumes/Docker -quiet
-  when: not docker_installed.stat.exists
-
-- name: Start Docker app (will prompt for permissions if first time)
+- name: Start Docker Desktop (GUI app)
   shell: open -a Docker
-  when: not docker_installed.stat.exists
+  when: docker_app.stat.exists
 
-- name: Wait for Docker daemon to be available
+- name: Wait for Docker daemon to be ready
   shell: |
     while ! docker system info > /dev/null 2>&1; do sleep 2; done
   retries: 10
@@ -37,10 +50,10 @@
   register: docker_ready
   until: docker_ready.rc == 0
 
-- name: Ensure Docker Compose works
+- name: Confirm Docker Compose is available
   shell: docker compose version
-  register: compose_output
+  register: compose_check
 
 - name: Print Docker Compose version
   debug:
-    var: compose_output.stdout
+    var: compose_check.stdout
