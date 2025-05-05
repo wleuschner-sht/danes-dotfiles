@@ -1,57 +1,63 @@
----
-- name: Ensure curl and tar are installed (macOS only)
-  homebrew:
-    name: "{{ item }}"
-    state: present
-  loop:
-    - curl
-    - gnu-tar
-  when: ansible_facts['os_family'] == 'Darwin'
+- name: Setup Go manually (no mise)
+  hosts: localhost
+  become: false
+  vars:
+    go_version: "1.20.14"
+    go_tarball: "go{{ go_version }}.darwin-{{ 'arm64' if ansible_facts['architecture'] == 'arm64' else 'amd64' }}.tar.gz"
+    go_url: "https://go.dev/dl/{{ go_tarball }}"
+    go_install_dir: "/usr/local/go"
+  tasks:
+    - name: Ensure curl and tar are installed (macOS only)
+      homebrew:
+        name: "{{ item }}"
+        state: present
+      loop:
+        - curl
+        - gnu-tar
+      when: ansible_facts['os_family'] == 'Darwin'
 
-- name: Set Go download architecture
-  set_fact:
-    go_arch: "{{ 'arm64' if ansible_facts['architecture'] == 'arm64' else 'amd64' }}"
-  when: ansible_facts['os_family'] == 'Darwin'
+    - name: Uninstall Homebrew Go (if exists)
+      homebrew:
+        name: go
+        state: absent
 
-- name: Remove existing Go installation if any
-  file:
-    path: /usr/local/go
-    state: absent
-  become: true
-  when: ansible_facts['os_family'] == 'Darwin'
+    - name: Remove existing Go installation (if any)
+      become: true
+      file:
+        path: "{{ go_install_dir }}"
+        state: absent
 
-- name: Download Go 1.20.14 archive for macOS
-  get_url:
-    url: "https://go.dev/dl/go1.20.14.darwin-{{ go_arch }}.tar.gz"
-    dest: /tmp/go1.20.14.tar.gz
-    mode: "0644"
-    validate_certs: no # <-- disables certificate validation
-  when: ansible_facts['os_family'] == 'Darwin'
+    - name: Download Go {{ go_version }} tarball
+      get_url:
+        url: "{{ go_url }}"
+        dest: "/tmp/{{ go_tarball }}"
+        mode: "0644"
+        validate_certs: no
 
-- name: Extract Go to /usr/local
-  unarchive:
-    src: /tmp/go1.20.14.tar.gz
-    dest: /usr/local
-    remote_src: yes
-    extra_opts: [--strip-components=1]
-  become: true
-  when: ansible_facts['os_family'] == 'Darwin'
+    - name: Extract Go to /usr/local
+      become: true
+      unarchive:
+        src: "/tmp/{{ go_tarball }}"
+        dest: "/usr/local"
+        remote_src: yes
+        extra_opts: ["--strip-components=1"]
 
-- name: Ensure Go binary path is added to .zshrc
-  lineinfile:
-    path: "{{ ansible_env.HOME }}/.zshrc"
-    line: 'export PATH="$PATH:/usr/local/go/bin"'
-    insertafter: EOF
-    state: present
+    - name: Ensure Go is in PATH
+      lineinfile:
+        path: "{{ ansible_env.HOME }}/.zshrc"
+        line: 'export PATH="$PATH:/usr/local/go/bin"'
+        insertafter: EOF
+        state: present
 
-- name: Verify Go installation
-  shell: |
-    source "{{ ansible_env.HOME }}/.zshrc"
-    go version
-  args:
-    executable: /bin/zsh
-  register: go_version_check
+    - name: Verify Go version
+      shell: |
+        source ~/.zshrc
+        go version
+      args:
+        executable: /bin/zsh
+      register: go_version_result
+      changed_when: false
 
-- name: Show installed Go version
-  debug:
-    var: go_version_check.stdout
+    - name: Output active Go version
+      debug:
+        var: go_version_result.stdout
