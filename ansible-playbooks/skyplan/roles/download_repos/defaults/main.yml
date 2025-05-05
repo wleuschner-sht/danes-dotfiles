@@ -1,4 +1,4 @@
-work_dir: "{{ lookup('env', 'SKYHOME') }}"
+work_dir: "{{ ansible_env.HOME }}/work"
 
 repos:
   - repo: git@github.com:skyhop-tech/go-sky.git
