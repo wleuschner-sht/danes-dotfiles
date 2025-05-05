@@ -29,6 +29,19 @@
     install_options: ["--only-dependencies"]
   when: ansible_facts['os_family'] == 'Darwin'
 
+# Common libraries for ImageMagick that brew might miss
+- name: Ensure common ImageMagick libraries are installed
+  homebrew:
+    name:
+      - jpeg
+      - libpng
+      - libtiff
+      - freetype
+      - libheif
+      - webp
+    state: present
+  when: ansible_facts['os_family'] == 'Darwin'
+
 # Removed: libjxl installation — not available via Homebrew
 
 - name: Download ImageMagick source tarball
