@@ -5,10 +5,10 @@
   tasks:
     - name: Setup ZSH
       include_role:
-        name: zsh
+        name: download_zsh
     - name: Setup SSH For Git and Github
       include_role:
-        name: ssh_setup
+        name: setup_ssh
     - name: Clone SkyHop Repos
       include_role:
         name: download_repos
@@ -17,7 +17,7 @@
         name: download_node
     - name: Setup dev environment
       include_role:
-        name: portal_spa_setup
+        name: setup_portal_spa
     - name: Setup local hosts
       include_role:
         name: update_hosts
