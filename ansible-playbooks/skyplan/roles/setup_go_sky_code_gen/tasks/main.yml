@@ -13,12 +13,6 @@
     msg: "The go-sky repo is not present at {{ go_sky_path }}. Make sure it was cloned first."
   when: not go_sky_dir.stat.exists
 
-- name: Run go mod tidy
-  shell: go mod tidy
-  args:
-    chdir: "{{ go_sky_path }}"
-    executable: /bin/zsh
-
 - name: Run provision code generation
   shell: make gen
   args:
@@ -29,6 +23,12 @@
   shell: make gen
   args:
     chdir: "{{ go_sky_path }}/proto"
+    executable: /bin/zsh
+
+- name: Run go mod tidy
+  shell: go mod tidy
+  args:
+    chdir: "{{ go_sky_path }}"
     executable: /bin/zsh
 
 - name: Run full project generation including GraphQL
