@@ -29,6 +29,11 @@
     install_options: ["--only-dependencies"]
   when: ansible_facts['os_family'] == 'Darwin'
 
+- name: Install JPEG XL dependencies
+  homebrew:
+    name: libjxl
+    state: present
+
 - name: Download ImageMagick source tarball
   get_url:
     url: "{{ imagemagick_url }}"
