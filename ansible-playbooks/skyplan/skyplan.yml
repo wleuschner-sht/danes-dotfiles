@@ -12,3 +12,15 @@
     - name: Clone SkyHop Repos
       include_role:
         name: download_repos
+    - name: Install Node.js
+      include_role:
+        name: download_node
+    - name: Setup dev environment
+      include_role:
+        name: portal_spa_setup
+    - name: Setup local hosts
+      include_role:
+        name: update_hosts
+    - name: Install Go 1.20.14
+      include_role:
+        name: download_golang

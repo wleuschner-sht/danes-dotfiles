@@ -1,0 +1,50 @@
+---
+- name: Ensure Homebrew is installed (macOS only)
+  homebrew:
+    name: homebrew
+    state: present
+  when: ansible_facts['os_family'] == 'Darwin'
+
+- name: Install NVM via Homebrew
+  homebrew:
+    name: nvm
+    state: present
+  when: ansible_facts['os_family'] == 'Darwin'
+
+- name: Ensure NVM directory exists
+  file:
+    path: "{{ ansible_env.HOME }}/.nvm"
+    state: directory
+
+- name: Add NVM init block to .zshrc
+  blockinfile:
+    path: "{{ ansible_env.HOME }}/.zshrc"
+    block: |
+      export NVM_DIR="$HOME/.nvm"
+      [ -s "$(brew --prefix nvm)/nvm.sh" ] && \. "$(brew --prefix nvm)/nvm.sh"
+    marker: "# {mark} ANSIBLE MANAGED BLOCK: NVM INIT"
+
+- name: Install Node.js 18.9.0 via NVM using Zsh
+  shell: |
+    export NVM_DIR="$HOME/.nvm"
+    source "$(brew --prefix nvm)/nvm.sh"
+    nvm install 18.9.0
+    nvm alias default 18.9.0
+  args:
+    executable: /bin/zsh
+  environment:
+    NVM_DIR: "{{ ansible_env.HOME }}/.nvm"
+  changed_when: false
+
+- name: Verify Node.js is installed
+  shell: |
+    export NVM_DIR="$HOME/.nvm"
+    source "$(brew --prefix nvm)/nvm.sh"
+    node -v
+  args:
+    executable: /bin/zsh
+  register: node_version_check
+
+- name: Debug node version
+  debug:
+    var: node_version_check.stdout

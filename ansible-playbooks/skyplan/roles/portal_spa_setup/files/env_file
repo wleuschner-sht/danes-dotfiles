@@ -1,0 +1,8 @@
+BROWSER="none"
+NODE_ENV="development"
+# GQL_INTROSPECTION_ENDPOINT="http://localhost:8080/graphql"
+# GQL_INTROSPECTION_ENDPOINT="https://api.dev.skyvibe.io/graphql"
+GQL_INTROSPECTION_ENDPOINT="https://api.stage.skyvibe.io/graphql"
+CYPRESS_BASE_URL="http://localhost:3000"
+CYPRESS_USERNAME="jdoe"
+CYPRESS_PASSWORD="$kyvibe"

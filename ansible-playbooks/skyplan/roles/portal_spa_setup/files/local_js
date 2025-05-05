@@ -1,0 +1,11 @@
+module.exports = (config = {}) => ({
+  ...(config || {}),
+  optimization: undefined,
+  devServer: {
+    ...(config?.devServer || {}),
+    client: {
+      ...(config?.devServer?.client || {}),
+      overlay: false,
+    },
+  },
+});

@@ -1,0 +1,7 @@
+---
+- name: Ensure Skyhop hosts block is present in /etc/hosts
+  blockinfile:
+    path: /etc/hosts
+    block: "{{ lookup('file', 'skyhop_hosts_block') }}"
+    marker: "# {mark} SKYHOP HOSTS"
+  become: true
