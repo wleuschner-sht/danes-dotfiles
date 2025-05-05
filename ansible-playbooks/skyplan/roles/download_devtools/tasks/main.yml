@@ -22,26 +22,66 @@
     - ansible_facts['os_family'] == 'Darwin'
     - not homebrew_installed
 
+# Visual Studio Code
+- name: Check if Visual Studio Code is installed
+  command: brew list --cask visual-studio-code
+  register: vscode_check
+  failed_when: false
+  changed_when: false
+  when: ansible_facts['os_family'] == 'Darwin'
+
 - name: Install Visual Studio Code
   homebrew_cask:
     name: visual-studio-code
     state: present
+  when:
+    - ansible_facts['os_family'] == 'Darwin'
+    - vscode_check.rc != 0
+
+# Sequel Ace
+- name: Check if Sequel Ace is installed
+  command: brew list --cask sequel-ace
+  register: sequel_ace_check
+  failed_when: false
+  changed_when: false
   when: ansible_facts['os_family'] == 'Darwin'
 
 - name: Install Sequel Ace
   homebrew_cask:
     name: sequel-ace
     state: present
+  when:
+    - ansible_facts['os_family'] == 'Darwin'
+    - sequel_ace_check.rc != 0
+
+# MySQL
+- name: Check if MySQL is installed
+  command: brew list mysql
+  register: mysql_check
+  failed_when: false
+  changed_when: false
   when: ansible_facts['os_family'] == 'Darwin'
 
 - name: Install MySQL
   homebrew:
     name: mysql
     state: present
+  when:
+    - ansible_facts['os_family'] == 'Darwin'
+    - mysql_check.rc != 0
+
+# Tmux
+- name: Check if Tmux is installed
+  command: brew list tmux
+  register: tmux_check
+  failed_when: false
+  changed_when: false
   when: ansible_facts['os_family'] == 'Darwin'
 
 - name: Install Tmux
   homebrew:
     name: tmux
     state: present
-  when: ansible_facts['os_family'] == 'Darwin'
+  when:
+    - ansible_facts['os_family'] == 'Darwin'
+    - tmux_check.rc != 0
