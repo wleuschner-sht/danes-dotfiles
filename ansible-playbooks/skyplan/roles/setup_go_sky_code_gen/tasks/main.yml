@@ -1,4 +1,3 @@
----
 - name: Set path to go-sky repo
   set_fact:
     go_sky_path: "{{ ansible_env.HOME }}/work/go-sky"
@@ -18,12 +17,34 @@
   args:
     chdir: "{{ go_sky_path }}/provision"
     executable: /bin/zsh
+  register: provision_codegen_result
+  ignore_errors: true
+
+- name: Show provision codegen stdout
+  debug:
+    var: provision_codegen_result.stdout_lines
+
+- name: Show provision codegen stderr (if any)
+  debug:
+    var: provision_codegen_result.stderr_lines
+  when: provision_codegen_result.rc != 0
 
 - name: Run proto code generation
   shell: make gen
   args:
     chdir: "{{ go_sky_path }}/proto"
     executable: /bin/zsh
+  register: proto_codegen_result
+  ignore_errors: true
+
+- name: Show proto codegen stdout
+  debug:
+    var: proto_codegen_result.stdout_lines
+
+- name: Show proto codegen stderr (if any)
+  debug:
+    var: proto_codegen_result.stderr_lines
+  when: proto_codegen_result.rc != 0
 
 - name: Run go mod tidy
   shell: go mod tidy
@@ -36,3 +57,14 @@
   args:
     chdir: "{{ go_sky_path }}"
     executable: /bin/zsh
+  register: full_codegen_result
+  ignore_errors: true
+
+- name: Show full project codegen stdout
+  debug:
+    var: full_codegen_result.stdout_lines
+
+- name: Show full project codegen stderr (if any)
+  debug:
+    var: full_codegen_result.stderr_lines
+  when: full_codegen_result.rc != 0
