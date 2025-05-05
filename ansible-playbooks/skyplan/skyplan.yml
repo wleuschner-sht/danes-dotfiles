@@ -35,7 +35,7 @@
         name: download_atlas
     - name: Install pkg-config
       include_role:
-        name: download_pkg_config
+        name: download_pkgconfig
     - name: Install ImageMagick from source
       include_role:
         name: download_imagemagick
