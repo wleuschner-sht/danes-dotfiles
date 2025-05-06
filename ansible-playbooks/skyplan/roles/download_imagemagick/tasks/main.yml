@@ -34,6 +34,11 @@
     imagemagick_skip_install: "{{ imagemagick_version.stdout is search('ImageMagick') }}"
   when: imagemagick_version.rc == 0
 
+- name: Set default skip flag if not already defined
+  set_fact:
+    imagemagick_skip_install: false
+  when: imagemagick_skip_install is not defined
+
 # 📦 Install Dependencies
 - name: Ensure ImageMagick dependencies are installed via Homebrew
   homebrew:
