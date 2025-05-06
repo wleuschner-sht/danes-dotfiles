@@ -51,6 +51,6 @@
     - name: Setup Go Sky Repo (Part 1 - Scripts)
       include_role:
         name: setup_go_sky_scripts
-    - name: Setup Go Sky Repo (Part 2 - Code Generation)
-      include_role:
-        name: setup_go_sky_code_gen
+    # - name: Setup Go Sky Repo (Part 2 - Code Generation)
+    #   include_role:
+    #     name: setup_go_sky_code_gen
