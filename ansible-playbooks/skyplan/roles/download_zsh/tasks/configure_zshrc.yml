@@ -1,8 +1,0 @@
-- name: Ensure .zshrc sources .zshrc.d/*.zsh files
-  blockinfile:
-    path: "{{ zshrc_file }}"
-    marker: "# {mark} ANSIBLE MANAGED BLOCK - Source .zshrc.d"
-    block: |
-      for file in ~/.zshrc.d/*.zsh; do
-        source "$file"
-      done

@@ -3,9 +3,3 @@
 
 - name: Setup Environment Variables
   include_tasks: setup_env.yml
-
-- name: Configure .zshrc
-  include_tasks: configure_zshrc.yml
-
-- name: Add Extra Library Paths to .zshrc
-  include_tasks: extra_paths.yml

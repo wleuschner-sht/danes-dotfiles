@@ -7,4 +7,9 @@ custom_env_vars:
   - name: SKYHOME
     value: "{{ work_dir }}"
   - name: PATH
-    value: "$GOPATH/bin:$PATH"
+    value: "$GOPATH/bin:/opt/bin:$PATH"
+  - name: DYLD_LIBRARY_PATH
+    value: "/opt/lib/"
+  - name: PKG_CONFIG_PATH
+    value: "/opt/lib/pkgconfig/:$PKG_CONFIG_PATH"
+

@@ -20,3 +20,8 @@
     src: local_js
     dest: "{{ ansible_env.HOME }}/work/portal-spa/config/local.js"
     mode: "0644"
+
+- name: Run npm install in portal-spa
+  shell: npm install --legacy-peer-deps
+  args:
+    chdir: "{{ ansible_env.HOME }}/work/portal-spa"

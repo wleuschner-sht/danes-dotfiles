@@ -1,8 +1,0 @@
-- name: Ensure custom PATH and library env vars are set in .zshrc
-  blockinfile:
-    path: "{{ ansible_env.HOME }}/.zshrc"
-    marker: "# {mark} ANSIBLE MANAGED BLOCK: CUSTOM ENV VARS"
-    block: |
-      export PATH="/opt/bin:$PATH"
-      export DYLD_LIBRARY_PATH="/opt/lib/"
-      export PKG_CONFIG_PATH="/opt/lib/pkgconfig/:$PKG_CONFIG_PATH"

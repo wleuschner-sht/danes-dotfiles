@@ -1,11 +1,14 @@
-- name: Ensure ~/.zshrc.d directory exists
+- name: Ensure .zshrc file exists
   file:
-    path: "{{ zshrc_custom_dir }}"
-    state: directory
-    mode: '0755'
-
-- name: Write environment variables file
-  template:
-    src: 00-env-vars.zsh.j2
-    dest: "{{ zshrc_custom_dir }}/00-env-vars.zsh"
+    path: "{{ zshrc_file }}"
+    state: touch
     mode: '0644'
+
+- name: Set custom environment variables in .zshrc
+  blockinfile:
+    path: "{{ zshrc_file }}"
+    marker: "# {mark} ANSIBLE MANAGED BLOCK: CUSTOM ENV VARS"
+    block: |
+      {% for var in custom_env_vars %}
+      export {{ var.name }}="{{ var.value }}"
+      {% endfor %}

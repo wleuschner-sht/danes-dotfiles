@@ -1,5 +1,8 @@
 - name: Run provision code generation
-  shell: zsh -l -c 'cd {{ go_sky_path }}/provision && make gen'
+  shell: |
+    cd {{ go_sky_path }}/provision
+    source {{ zsh_file }}
+    make gen
   register: provision_codegen_result
   ignore_errors: true
 
@@ -13,7 +16,10 @@
   when: provision_codegen_result.rc != 0
 
 - name: Run proto code generation
-  shell: zsh -l -c 'cd {{ go_sky_path }}/proto && make gen'
+  shell: |
+    cd {{ go_sky_path }}/proto
+    source {{ zsh_file }}
+    make gen
   register: proto_codegen_result
   ignore_errors: true
 
@@ -27,12 +33,18 @@
   when: proto_codegen_result.rc != 0
 
 - name: Run full project generation including GraphQL
-  shell: zsh -l -c 'cd {{ go_sky_path }} && make gen'
+  shell: |
+    cd {{ go_sky_path }}
+    source {{ zsh_file }}
+    make gen
   register: full_codegen_result
   ignore_errors: true
 
 - name: Run go mod tidy
-  shell: zsh -l -c 'cd {{ go_sky_path }} && go mod tidy'
+  shell: |
+    cd {{ go_sky_path }}
+    source {{ zsh_file }}
+    go mod tidy
 
 - name: Show full project codegen stdout
   debug:
