@@ -1,5 +1,5 @@
 ---
-imagemagick_version: "7.1.1-25"
+imagemagick_version: "7.1.1-23"
 imagemagick_url: "https://imagemagick.org/archive/releases/ImageMagick-{{ imagemagick_version }}.tar.xz"
 imagemagick_archive: "ImageMagick-{{ imagemagick_version }}.tar.xz"
 imagemagick_src_dir: "ImageMagick-{{ imagemagick_version }}"
