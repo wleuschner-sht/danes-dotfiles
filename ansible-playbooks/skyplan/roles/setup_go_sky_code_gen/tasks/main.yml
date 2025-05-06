@@ -1,22 +1,5 @@
-- name: Set path to go-sky repo
-  set_fact:
-    go_sky_path: "{{ ansible_env.HOME }}/work/go-sky"
-
-- name: Check if go-sky repo exists
-  stat:
-    path: "{{ go_sky_path }}"
-  register: go_sky_dir
-
-- name: Fail if go-sky directory is missing
-  fail:
-    msg: "The go-sky repo is not present at {{ go_sky_path }}. Make sure it was cloned first."
-  when: not go_sky_dir.stat.exists
-
 - name: Run provision code generation
-  shell: make gen
-  args:
-    chdir: "{{ go_sky_path }}/provision"
-    executable: /bin/zsh
+  shell: zsh -l -c 'cd {{ go_sky_path }}/provision && make gen'
   register: provision_codegen_result
   ignore_errors: true
 
@@ -30,10 +13,7 @@
   when: provision_codegen_result.rc != 0
 
 - name: Run proto code generation
-  shell: make gen
-  args:
-    chdir: "{{ go_sky_path }}/proto"
-    executable: /bin/zsh
+  shell: zsh -l -c 'cd {{ go_sky_path }}/proto && make gen'
   register: proto_codegen_result
   ignore_errors: true
 
@@ -46,19 +26,13 @@
     var: proto_codegen_result.stderr_lines
   when: proto_codegen_result.rc != 0
 
-- name: Run go mod tidy
-  shell: go mod tidy
-  args:
-    chdir: "{{ go_sky_path }}"
-    executable: /bin/zsh
-
 - name: Run full project generation including GraphQL
-  shell: make gen
-  args:
-    chdir: "{{ go_sky_path }}"
-    executable: /bin/zsh
+  shell: zsh -l -c 'cd {{ go_sky_path }} && make gen'
   register: full_codegen_result
   ignore_errors: true
+
+- name: Run go mod tidy
+  shell: zsh -l -c 'cd {{ go_sky_path }} && go mod tidy'
 
 - name: Show full project codegen stdout
   debug:
