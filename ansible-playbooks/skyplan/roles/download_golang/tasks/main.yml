@@ -34,12 +34,25 @@
     remote_src: yes
     extra_opts: ["--strip-components=1"]
 
-- name: Ensure Go is in PATH
+- name: Ensure Go is in PATH (system binary)
   lineinfile:
     path: "{{ ansible_env.HOME }}/.zshrc"
     line: 'export PATH="$PATH:/usr/local/go/bin"'
     insertafter: EOF
     state: present
+
+- name: Ensure GOPATH/bin is in PATH
+  lineinfile:
+    path: "{{ ansible_env.HOME }}/.zshrc"
+    line: 'export PATH="$PATH:{{ ansible_env.HOME }}/go/bin"'
+    insertafter: EOF
+    state: present
+
+- name: Create GOPATH bin directory
+  file:
+    path: "{{ ansible_env.HOME }}/go/bin"
+    state: directory
+    mode: "0755"
 
 - name: Verify Go version
   shell: |
