@@ -85,3 +85,19 @@
   when:
     - ansible_facts['os_family'] == 'Darwin'
     - tmux_check.rc != 0
+
+# CTOP (CLI TOOL)
+- name: Check if CTOP is installed
+  command: brew list ctop
+  register: ctop_check
+  failed_when: false
+  changed_when: false
+  when: ansible_facts['os_family'] == 'Darwin'
+
+- name: Install CTOP
+  homebrew:
+    name: ctop
+    state: present
+  when:
+    - ansible_facts['os_family'] == 'Darwin'
+    - ctop_check.rc != 0
