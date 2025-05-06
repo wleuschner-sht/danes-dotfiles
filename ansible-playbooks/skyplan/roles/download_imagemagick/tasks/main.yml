@@ -25,14 +25,14 @@
 # 🧪 Check if ImageMagick is already installed
 - name: Check if ImageMagick is installed
   command: magick -version
-  register: imagemagick_version
+  register: imagemagick_version_check
   changed_when: false
   failed_when: false
 
 - name: Set skip flag if ImageMagick is installed and version is sufficient
   set_fact:
-    imagemagick_skip_install: "{{ imagemagick_version.stdout is search('ImageMagick') }}"
-  when: imagemagick_version.rc == 0
+    imagemagick_skip_install: "{{ imagemagick_version_check.stdout is search('ImageMagick') }}"
+  when: imagemagick_version_check.rc == 0
 
 - name: Set default skip flag if not already defined
   set_fact:
